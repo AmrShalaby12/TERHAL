@@ -6,7 +6,7 @@
 
 - Flutter: `3.44.0`
 - Dart: `3.12.x`
-- إصدار التطبيق: `1.3.0+6`
+- إصدار التطبيق: `1.3.1+7`
 - Android application ID: `com.allentravels.driver`
 - iOS bundle ID: `online.noxusai.terhal`
 - Production API: `https://ter7al.noxusai.online/api`
@@ -21,8 +21,8 @@ flutter pub get
 flutter analyze
 flutter test
 flutter build appbundle --release \
-  --build-name=1.3.0 \
-  --build-number=6 \
+  --build-name=1.3.1 \
+  --build-number=7 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -34,7 +34,7 @@ flutter build appbundle --release \
 
 نسخة APK الجاهزة للاختبار موجودة في:
 
-`dist/Terhal-1.3.0+6.apk`
+`dist/Terhal-1.3.1+7.apk`
 
 ## iOS
 
@@ -49,8 +49,8 @@ flutter build appbundle --release \
 cd mobile
 flutter pub get
 flutter build ipa --release \
-  --build-name=1.3.0 \
-  --build-number=6 \
+  --build-name=1.3.1 \
+  --build-number=7 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/

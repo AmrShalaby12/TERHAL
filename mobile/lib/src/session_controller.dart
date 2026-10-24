@@ -353,7 +353,7 @@ class SessionController extends StateNotifier<SessionState> {
         await Future.wait([
           _refreshStudentProfile(token),
           _refreshPayments(token),
-          _refreshAppExperience(),
+          refreshAppExperience(),
         ]);
         final (home, trips, bookings, notifications) = await (
           _api.fetchStudentHome(token),
@@ -484,7 +484,7 @@ class SessionController extends StateNotifier<SessionState> {
     }
   }
 
-  Future<void> _refreshAppExperience() async {
+  Future<void> refreshAppExperience() async {
     try {
       final experience = await _api.fetchAppExperience();
       state = state.copyWith(appExperience: experience);

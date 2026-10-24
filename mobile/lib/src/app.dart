@@ -29,3 +29,4 @@ part 'presentation/supervisor_bookings.dart';
 part 'presentation/parent.dart';
 part 'presentation/admin_tracking.dart';
 part 'presentation/shared_widgets.dart';
+part 'presentation/detail_pages.dart';

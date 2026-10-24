@@ -13,7 +13,7 @@ import 'src/services/platform_bootstrap.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const driverWebViewMode =
-      String.fromEnvironment('APP_MODE', defaultValue: 'driver') != 'terhal';
+      String.fromEnvironment('APP_MODE', defaultValue: 'terhal') == 'driver';
 
   final enablePreview =
       !kReleaseMode &&

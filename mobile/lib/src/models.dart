@@ -239,6 +239,7 @@ class StudentHomeModel {
     this.returnBooking,
     this.unreadNotifications = 0,
     this.duePayments = 0,
+    this.supportContacts = const [],
   });
 
   final String name;
@@ -249,6 +250,7 @@ class StudentHomeModel {
   final BookingModel? returnBooking;
   final int unreadNotifications;
   final int duePayments;
+  final List<SupportContactModel> supportContacts;
 
   factory StudentHomeModel.fromJson(Map<String, dynamic> json) {
     final student = json['student'] as Map<String, dynamic>? ?? const {};
@@ -267,8 +269,49 @@ class StudentHomeModel {
           : null,
       unreadNotifications: _parseInt(json['unread_notifications']),
       duePayments: _parseInt(json['due_payments']),
+      supportContacts: (json['support_contacts'] as List? ?? const [])
+          .map(
+            (item) => SupportContactModel.fromJson(
+              (item as Map).cast<String, dynamic>(),
+            ),
+          )
+          .toList(),
     );
   }
+}
+
+class SupportContactModel {
+  const SupportContactModel({
+    required this.key,
+    required this.title,
+    required this.subtitle,
+    required this.phone,
+  });
+  final String key;
+  final String title;
+  final String subtitle;
+  final String phone;
+
+  String get whatsappUrl {
+    var digits = phone.trim();
+    const arabic = '٠١٢٣٤٥٦٧٨٩';
+    for (var i = 0; i < arabic.length; i++) {
+      digits = digits.replaceAll(arabic[i], '$i');
+    }
+    digits = digits.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.startsWith('00')) digits = digits.substring(2);
+    if (digits.length == 11 && digits.startsWith('01')) digits = '2$digits';
+    if (digits.length < 8 || digits.length > 15) return '';
+    return 'https://wa.me/$digits';
+  }
+
+  factory SupportContactModel.fromJson(Map<String, dynamic> json) =>
+      SupportContactModel(
+        key: json['key']?.toString() ?? '',
+        title: json['title']?.toString() ?? '',
+        subtitle: json['subtitle']?.toString() ?? '',
+        phone: json['phone']?.toString() ?? '',
+      );
 }
 
 class BookingModel {
@@ -672,6 +715,9 @@ class PaymentModel {
     'wallet' => 'محفظة إلكترونية',
     'bank_transfer' => 'تحويل بنكي',
     'card' => 'بطاقة بنكية',
+    'kashier' => 'دفع إلكتروني',
+    'subscription' => 'من رصيد الاشتراك',
+    'manual_transfer' => 'تحويل يدوي',
     _ => paymentMethod,
   };
 
@@ -709,10 +755,38 @@ class AppExperienceModel {
   const AppExperienceModel({
     this.tripBookingButtonLabel = 'احجز من الاشتراك',
     this.tripBookedButtonLabel = 'تم الحجز',
+    this.announcementTitle = '',
+    this.announcementBody = '',
+    this.announcementImageUrl = '',
+    this.announcementLinkUrl = '',
+    this.announcementButtonLabel = 'اعرف المزيد',
+    this.announcementIsActive = false,
+    this.announcementPopupEnabled = false,
   });
 
   final String tripBookingButtonLabel;
   final String tripBookedButtonLabel;
+  final String announcementTitle;
+  final String announcementBody;
+  final String announcementImageUrl;
+  final String announcementLinkUrl;
+  final String announcementButtonLabel;
+  final bool announcementIsActive;
+  final bool announcementPopupEnabled;
+
+  bool get hasPopup =>
+      announcementIsActive &&
+      announcementPopupEnabled &&
+      (announcementTitle.isNotEmpty ||
+          announcementBody.isNotEmpty ||
+          announcementImageUrl.isNotEmpty);
+  String get announcementKey => [
+    announcementTitle,
+    announcementBody,
+    announcementImageUrl,
+    announcementLinkUrl,
+    announcementButtonLabel,
+  ].join('|');
 
   factory AppExperienceModel.fromJson(Map<String, dynamic> json) {
     String label(String key, String fallback) {
@@ -726,6 +800,16 @@ class AppExperienceModel {
         'احجز من الاشتراك',
       ),
       tripBookedButtonLabel: label('trip_booked_button_label', 'تم الحجز'),
+      announcementTitle: label('announcement_title', ''),
+      announcementBody: label('announcement_body', ''),
+      announcementImageUrl: label('announcement_image_url', ''),
+      announcementLinkUrl: label('announcement_link_url', ''),
+      announcementButtonLabel: label(
+        'announcement_button_label',
+        'اعرف المزيد',
+      ),
+      announcementIsActive: _parseBool(json['announcement_is_active']),
+      announcementPopupEnabled: _parseBool(json['announcement_popup_enabled']),
     );
   }
 }

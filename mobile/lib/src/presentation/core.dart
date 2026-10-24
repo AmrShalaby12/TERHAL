@@ -139,7 +139,12 @@ class TerhalApp extends ConsumerWidget {
         final content = kDebugMode
             ? DevicePreview.appBuilder(context, child)
             : child ?? const SizedBox.shrink();
-        return _TerhalExperienceLayer(child: content);
+        return MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
+          child: content,
+        );
       },
       debugShowCheckedModeBanner: false,
       title: 'Terhal',
@@ -219,11 +224,88 @@ class _AppShellState extends ConsumerState<AppShell> {
   bool _seenLanding = false;
   StreamSubscription<String>? _pushTokenSubscription;
   String? _pushToken;
+  String? _shownAnnouncement;
+  Timer? _contentRefreshTimer;
+
+  void _maybeShowAnnouncement(SessionState session) {
+    final ad = session.appExperience;
+    if (session.user?.isStudent != true ||
+        !ad.hasPopup ||
+        _shownAnnouncement == ad.announcementKey)
+      return;
+    _shownAnnouncement = ad.announcementKey;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !ref.read(sessionProvider).isAuthenticated) return;
+      showDialog<void>(
+        context: context,
+        builder: (_) => Dialog(
+          insetPadding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: IconButton(
+                    tooltip: 'إغلاق الإعلان',
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ),
+                if (ad.announcementImageUrl.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      ad.announcementImageUrl,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Text(
+                  ad.announcementTitle,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  ad.announcementBody,
+                  style: const TextStyle(fontSize: 15, height: 1.7),
+                ),
+                const SizedBox(height: 20),
+                if (ad.announcementLinkUrl.isNotEmpty)
+                  FilledButton(
+                    onPressed: () => openExternalLink(ad.announcementLinkUrl),
+                    child: Text(ad.announcementButtonLabel),
+                  ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('إغلاق'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _setUpPush());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setUpPush();
+      _maybeShowAnnouncement(ref.read(sessionProvider));
+    });
+    _contentRefreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (ref.read(sessionProvider).isAuthenticated) {
+        unawaited(ref.read(sessionProvider.notifier).refreshAppExperience());
+      }
+    });
   }
 
   Future<void> _setUpPush() async {
@@ -258,6 +340,7 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   @override
   void dispose() {
+    _contentRefreshTimer?.cancel();
     _pushTokenSubscription?.cancel();
     super.dispose();
   }
@@ -265,6 +348,8 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     ref.listen<SessionState>(sessionProvider, (previous, next) {
+      if (!next.isAuthenticated) _shownAnnouncement = null;
+      _maybeShowAnnouncement(next);
       if (next.isAuthenticated && previous?.isAuthenticated != true) {
         final token = _pushToken;
         if (token != null && token.isNotEmpty) {
@@ -1785,7 +1870,10 @@ class SupportSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(sessionProvider).user;
+    final session = ref.watch(sessionProvider);
+    final user = session.user;
+    final contacts =
+        session.studentHome?.supportContacts ?? const <SupportContactModel>[];
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
@@ -1804,119 +1892,120 @@ class SupportSheet extends ConsumerWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(22, 18, 22, 22),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Drag handle
-              Center(
-                child: Container(
-                  width: 42,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE3E5EE),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Drag handle
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 5,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFE74C3C), Color(0xFFC0392B)],
-                      ),
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x55E74C3C),
-                          blurRadius: 14,
-                          offset: Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.support_agent_rounded,
-                      color: Colors.white,
-                      size: 22,
+                      color: const Color(0xFFE3E5EE),
+                      borderRadius: BorderRadius.circular(999),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'الدعم والمساعدة',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF191919),
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          user?.universityName.isNotEmpty == true
-                              ? user!.universityName
-                              : 'فريق ترحال للدعم الطلابي',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF72798D),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _SupportTile(
-                icon: Icons.phone_in_talk_rounded,
-                title: 'اتصال مباشر',
-                subtitle: 'تحدّث مع مشرف الرحلة فورًا',
-                color: const Color(0xFF17A267),
-              ),
-              const SizedBox(height: 10),
-              _SupportTile(
-                icon: Icons.chat_bubble_outline_rounded,
-                title: 'دردشة الدعم',
-                subtitle: 'استفسارات الحجز وتقارير الرحلات',
-                color: const Color(0xFF087B66),
-              ),
-              const SizedBox(height: 10),
-              _SupportTile(
-                icon: Icons.shield_outlined,
-                title: 'بلاغ طارئ',
-                subtitle: 'في حالة حادثة أو حالة طارئة على الحافلة',
-                color: const Color(0xFFA61C1C),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFA61C1C),
-                    minimumSize: const Size.fromHeight(50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    textStyle: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14,
-                    ),
-                  ),
-                  child: const Text('إغلاق'),
                 ),
-              ),
-            ],
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFE74C3C), Color(0xFFC0392B)],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x55E74C3C),
+                            blurRadius: 14,
+                            offset: Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.support_agent_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'الدعم والمساعدة',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF191919),
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            user?.universityName.isNotEmpty == true
+                                ? user!.universityName
+                                : 'فريق ترحال للدعم الطلابي',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF72798D),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                if (contacts.isEmpty)
+                  const Text(
+                    'لم تتم إضافة أرقام الدعم بعد. اسحب الرئيسية لتحديث البيانات.',
+                  ),
+                for (final contact in contacts) ...[
+                  _SupportTile(
+                    icon: Icons.chat_outlined,
+                    title: contact.title,
+                    subtitle: contact.whatsappUrl.isEmpty
+                        ? 'الرقم غير متاح حاليًا'
+                        : '${contact.subtitle}\nتواصل عبر واتساب',
+                    color: const Color(0xFF087B66),
+                    onTap: contact.whatsappUrl.isEmpty
+                        ? null
+                        : () => openExternalLink(contact.whatsappUrl),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFFA61C1C),
+                      minimumSize: const Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      textStyle: const TextStyle(
+                        fontFamily: 'Tajawal',
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                      ),
+                    ),
+                    child: const Text('إغلاق'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1930,12 +2019,14 @@ class _SupportTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.color,
+    this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
   final Color color;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1944,15 +2035,7 @@ class _SupportTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(title),
-              backgroundColor: color,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -1982,8 +2065,6 @@ class _SupportTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Color(0xFF72798D),
                         fontSize: 12,

@@ -21,6 +21,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
   }
 
   void _showSupportSheet() {
+    unawaited(ref.read(sessionProvider.notifier).refresh());
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
@@ -60,48 +61,10 @@ class _StudentShellState extends ConsumerState<StudentShell> {
         ),
       ),
       bottomNavigationBar: _GlassNavBar(
-        child: NavigationBar(
-          selectedIndex: index,
-          onDestinationSelected: _switchTab,
-          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-          destinations: [
-            const NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'الرئيسية',
-            ),
-            const NavigationDestination(
-              icon: Icon(Icons.directions_bus_outlined),
-              selectedIcon: Icon(Icons.directions_bus),
-              label: 'الرحلات',
-            ),
-            const NavigationDestination(
-              icon: Icon(Icons.confirmation_number_outlined),
-              selectedIcon: Icon(Icons.confirmation_number_rounded),
-              label: 'حجوزاتي',
-            ),
-            NavigationDestination(
-              icon: Badge(
-                backgroundColor: const Color(0xFFA61C1C),
-                label: Text('${session.studentHome?.unreadNotifications ?? 0}'),
-                isLabelVisible:
-                    (session.studentHome?.unreadNotifications ?? 0) > 0,
-                child: const Icon(Icons.qr_code_2_outlined),
-              ),
-              selectedIcon: const Icon(Icons.qr_code_2_rounded),
-              label: 'رمز الحضور',
-            ),
-            const NavigationDestination(
-              icon: Icon(Icons.notifications_outlined),
-              selectedIcon: Icon(Icons.notifications),
-              label: 'الإشعارات',
-            ),
-            const NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'حسابي',
-            ),
-          ],
+        child: _StudentNavigation(
+          index: index,
+          onSelect: _switchTab,
+          unread: session.studentHome?.unreadNotifications ?? 0,
         ),
       ),
     );
@@ -1926,6 +1889,7 @@ class TripsPage extends ConsumerWidget {
                                     borderRadius: BorderRadius.circular(14),
                                   ),
                                   textStyle: const TextStyle(
+                                    fontFamily: 'Tajawal',
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
@@ -2140,24 +2104,20 @@ class QrPage extends ConsumerWidget {
                           ),
                           const SizedBox(height: 12),
                           GlassCard(
-                            child: Row(
+                            child: Column(
                               children: [
-                                Expanded(
-                                  child: InfoMetric(
-                                    label: 'الخط',
-                                    value: booking.trip.route.name,
-                                    icon: Icons.route_rounded,
-                                  ),
+                                InfoRow(
+                                  label: 'الخط',
+                                  value: booking.trip.route.name,
+                                  icon: Icons.route_rounded,
                                 ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: InfoMetric(
-                                    label: 'المقعد',
-                                    value: booking.seatNumber.isEmpty
-                                        ? '—'
-                                        : booking.seatNumber,
-                                    icon: Icons.event_seat_rounded,
-                                  ),
+                                const Divider(height: 24),
+                                InfoRow(
+                                  label: 'المقعد',
+                                  value: booking.seatNumber.isEmpty
+                                      ? '—'
+                                      : booking.seatNumber,
+                                  icon: Icons.event_seat_rounded,
                                 ),
                               ],
                             ),
@@ -2492,7 +2452,17 @@ class _NotificationTile extends StatefulWidget {
 }
 
 class _NotificationTileState extends State<_NotificationTile> {
-  bool expanded = false;
+  final bool expanded = false;
+
+  void _openMessage() {
+    widget.onMarkRead?.call();
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            NotificationDetailsPage(notification: widget.notification),
+      ),
+    );
+  }
 
   Color get _typeColor {
     switch (widget.notification.type) {
@@ -2513,10 +2483,7 @@ class _NotificationTileState extends State<_NotificationTile> {
     final unread = !notification.isRead;
     return InkWell(
       borderRadius: BorderRadius.circular(24),
-      onTap: () {
-        widget.onMarkRead?.call();
-        setState(() => expanded = !expanded);
-      },
+      onTap: _openMessage,
       child: GlassCard(
         padding: EdgeInsets.zero,
         child: Stack(
@@ -2557,20 +2524,19 @@ class _NotificationTileState extends State<_NotificationTile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Text(
-                                notification.title,
-                                maxLines: expanded ? null : 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: unread
-                                      ? FontWeight.w900
-                                      : FontWeight.w700,
-                                  color: const Color(0xFF191919),
-                                ),
+                            Text(
+                              notification.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: unread
+                                    ? FontWeight.w900
+                                    : FontWeight.w700,
+                                color: const Color(0xFF191919),
                               ),
                             ),
                             if (notification.createdAt != null)
@@ -2626,14 +2592,13 @@ class _NotificationTileState extends State<_NotificationTile> {
                             ),
                           ),
                         ],
-                        if (notification.body.length > 90) ...[
+                        ...[
                           const SizedBox(height: 2),
                           Align(
                             alignment: AlignmentDirectional.centerStart,
                             child: TextButton(
-                              onPressed: () =>
-                                  setState(() => expanded = !expanded),
-                              child: Text(expanded ? 'عرض أقل' : 'عرض المزيد'),
+                              onPressed: _openMessage,
+                              child: const Text('عرض الرسالة كاملة'),
                             ),
                           ),
                         ],
@@ -2895,7 +2860,7 @@ class _FinancialCarousel extends StatelessWidget {
       ),
     ];
     return SizedBox(
-      height: 150,
+      height: 190,
       child: PageView.builder(
         controller: PageController(viewportFraction: 0.92),
         itemCount: pages.length,
@@ -2903,48 +2868,67 @@ class _FinancialCarousel extends StatelessWidget {
           final item = pages[index];
           return Padding(
             padding: const EdgeInsetsDirectional.only(end: 10),
-            child: GlassCard(
-              child: Row(
-                children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: item.color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Icon(item.icon, color: item.color),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => InvoicesPage(
+                    initialStatus: index == 1 ? 'pending' : 'all',
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.title,
-                          style: const TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          item.value,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.detail,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF72798D),
-                          ),
-                        ),
-                      ],
+                ),
+              ),
+              child: GlassCard(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: item.color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(item.icon, color: item.color),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.title,
+                            style: const TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            item.value,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.detail,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF72798D),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'عرض الفواتير والتفاصيل ←',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF72131B),
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
