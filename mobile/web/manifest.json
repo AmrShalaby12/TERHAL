@@ -1,0 +1,19 @@
+{
+    "name": "ترحال للنقل الجامعي",
+    "short_name": "ترحال",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#A61C1C",
+    "theme_color": "#A61C1C",
+    "description": "منصة النقل الجامعي للحجز والحضور والتتبع المباشر.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "assets/assets/images/LOGO.png",
+            "sizes": "1280x1280",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

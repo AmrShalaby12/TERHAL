@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "197981587077",
+    "project_id": "allen-travel-prod",
+    "storage_bucket": "allen-travel-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197981587077:android:09a5581be235242fbc8bec",
+        "android_client_info": {
+          "package_name": "com.allentravels.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaBrxSZHKePn2Fkdh4orfOAvvl4jpExkc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197981587077:android:186eb0591232a87ebc8bec",
+        "android_client_info": {
+          "package_name": "com.allentravels.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaBrxSZHKePn2Fkdh4orfOAvvl4jpExkc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

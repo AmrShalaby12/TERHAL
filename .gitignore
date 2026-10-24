@@ -1,0 +1,42 @@
+# Python / Django generated files
+**/__pycache__/
+**/*.py[cod]
+.pytest_cache/
+backend/.postgres-data/
+backend/staticfiles/
+backend/media/
+backend/*.log
+backend/db.sqlite3*
+
+# Flutter / Android generated files
+mobile/.dart_tool/
+mobile/.flutter-plugins-dependencies
+mobile/build/
+mobile/android/.gradle/
+mobile/android/.kotlin/
+mobile/android/local.properties
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/ephemeral/
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+*.log
+
+# Runtime data and historical artifacts
+routing-data/
+backups/
+releases/
+artifacts/
+.deploy-*/
+.codex-backups/
+
+# Apple signing is managed by the developer's Apple account/Xcode.
+*.p12
+*.mobileprovision
+*.cer
+ExportOptions.plist

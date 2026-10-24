@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="ترحال — منصة النقل الجامعي للحجز والحضور والتتبع المباشر.">
+  <meta name="theme-color" content="#A61C1C">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="ترحال">
+  <link rel="apple-touch-icon" href="assets/assets/images/LOGO.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="preload" as="image" type="image/png" href="assets/assets/images/terhal_identity_bus_bnu_v3.png">
+  <link rel="preload" as="image" type="image/png" href="assets/assets/images/LOGO.png">
+
+  <title>ترحال | النقل الجامعي</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    #terhal-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 999998;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(248,244,238,.18) 0%, rgba(248,244,238,.18) 46%, #f8f4ee 100%),
+        url("assets/assets/images/terhal_identity_bus_bnu_v3.png") center 70% / cover no-repeat,
+        #f8f4ee;
+    }
+
+    .terhal-launch-mark {
+      display: block;
+      width: 132px;
+      height: 132px;
+      object-fit: contain;
+      box-shadow: 0 20px 46px rgba(117, 16, 23, .20);
+      animation: terhal-enter .55s cubic-bezier(.22, 1, .36, 1) both;
+    }
+
+    .terhal-launch-track {
+      width: 78px;
+      height: 3px;
+      margin-top: 22px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #e7ddd4;
+    }
+
+    .terhal-launch-track::after {
+      content: "";
+      display: block;
+      width: 48%;
+      height: 100%;
+      border-radius: inherit;
+      background: #a71920;
+      animation: terhal-route 1s cubic-bezier(.4, 0, .2, 1) infinite;
+    }
+
+    @keyframes terhal-enter {
+      from { opacity: 0; transform: translateY(8px) scale(.94); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes terhal-route {
+      from { transform: translateX(130%); }
+      to { transform: translateX(-210%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .terhal-launch-mark, .terhal-launch-track::after { animation: none; }
+    }
+
+    #terhal-android-install {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(30, 5, 7, .62);
+      backdrop-filter: blur(10px);
+      font-family: Arial, sans-serif;
+    }
+
+    #terhal-android-install.is-visible { display: grid; }
+
+    .terhal-install-card {
+      width: min(100%, 390px);
+      box-sizing: border-box;
+      padding: 28px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 28px;
+      background: linear-gradient(155deg, #fff 0%, #fff8f8 100%);
+      color: #241314;
+      box-shadow: 0 24px 70px rgba(46, 3, 7, .35);
+      text-align: center;
+    }
+
+    .terhal-install-mark {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #bf1e23, #7b0f12);
+      color: #fff;
+      font-size: 28px;
+      font-weight: 900;
+      box-shadow: 0 12px 28px rgba(166, 28, 28, .28);
+    }
+
+    .terhal-install-card h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.35;
+    }
+
+    .terhal-install-card p {
+      margin: 12px 0 22px;
+      color: #6e5b5c;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .terhal-install-primary,
+    .terhal-install-secondary {
+      min-height: 50px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .terhal-install-primary {
+      background: #a61c1c;
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(166, 28, 28, .24);
+    }
+
+    .terhal-install-secondary {
+      width: 100%;
+      margin-top: 8px;
+      border: 0;
+      background: transparent;
+      color: #725e5f;
+    }
+  </style>
+</head>
+<body style="margin:0;background:#F8F4EE">
+  <div id="terhal-loader" role="status" aria-label="تهيئة التطبيق">
+    <div aria-hidden="true">
+      <img class="terhal-launch-mark" src="assets/assets/images/LOGO.png" alt="شعار ترحال">
+      <div class="terhal-launch-track"></div>
+    </div>
+  </div>
+  <section id="terhal-android-install" role="dialog" aria-modal="true" aria-labelledby="terhal-install-title">
+    <div class="terhal-install-card">
+      <div class="terhal-install-mark" aria-hidden="true">ت</div>
+      <h1 id="terhal-install-title">حمّل تطبيق ترحال</h1>
+      <p>نزّل نسخة Android الرسمية للوصول الأسرع إلى الرحلات، التتبع المباشر، وتنبيهات الحضور.</p>
+      <a class="terhal-install-primary" href="/downloads/terhal.apk" download="Terhal.apk">تحميل التطبيق بصيغة APK</a>
+      <button class="terhal-install-secondary" id="terhal-install-later" type="button">المتابعة على الويب</button>
+    </div>
+  </section>
+  <script>
+    (function () {
+      const prompt = document.getElementById('terhal-android-install');
+      const later = document.getElementById('terhal-install-later');
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const dismissed = sessionStorage.getItem('terhal-apk-prompt-dismissed') === '1';
+      if (isAndroid && !dismissed) prompt.classList.add('is-visible');
+      later.addEventListener('click', function () {
+        sessionStorage.setItem('terhal-apk-prompt-dismissed', '1');
+        prompt.classList.remove('is-visible');
+      });
+    }());
+
+    window.addEventListener('flutter-first-frame', function () {
+      document.getElementById('terhal-loader')?.remove();
+    });
+  </script>
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js?v=20260810-bnu-v3" async></script>
+</body>
+</html>
