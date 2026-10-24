@@ -5,6 +5,7 @@
 - تعليمات إصدار المتاجر: [STORE_RELEASE.md](STORE_RELEASE.md)
 - تطبيق Flutter: `mobile/`
 - APK جاهز للاختبار: `dist/Terhal-1.3.1+7.apk`
+- Android App Bundle موقّع لرفع Google Play: [Terhal-1.3.1+7.aab](dist/Terhal-1.3.1+7.aab)
 - تفاصيل التحديث والمراجعة البصرية: [RELEASE_1.3.1.md](RELEASE_1.3.1.md)
 
 إصدار التطبيق الحالي: `1.3.1+7`.

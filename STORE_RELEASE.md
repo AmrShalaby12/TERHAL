@@ -32,6 +32,12 @@ flutter build appbundle --release \
 
 `mobile/build/app/outputs/bundle/release/app-release.aab`
 
+نسخة AAB الموقّعة للإصدار الحالي موجودة في:
+
+`dist/Terhal-1.3.1+7.aab`
+
+قبل رفعها، تأكد من مطابقة شهادة مفتاح الرفع للمسجل في Play Console وأن آخر version code مرفوع أقل من 7. لم تتم مراجعة حساب Google Play من هذه البيئة.
+
 نسخة APK الجاهزة للاختبار موجودة في:
 
 `dist/Terhal-1.3.1+7.apk`
