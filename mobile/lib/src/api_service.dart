@@ -22,46 +22,52 @@ class ApiService {
   /// Optional build-time override for running on a physical device on the
   /// same LAN as the backend, e.g.:
   ///   flutter run --dart-define=API_HOST=192.168.0.106
-  /// Default stays emulator/web-only (unchanged behaviour) when unset.
+  /// Development builds use local endpoints; store builds default to Terhal.
   static const String _apiHostOverride = String.fromEnvironment('API_HOST');
   static const String _apiBaseUrlOverride = String.fromEnvironment(
     'API_BASE_URL',
   );
 
-  static String get _baseUrl {
-    if (_apiBaseUrlOverride.isNotEmpty) {
-      final value = _apiBaseUrlOverride.replaceFirst(RegExp(r'/$'), '');
+  static String get _baseUrl => resolveBaseUrl();
+
+  /// Keep Xcode archives launchable without custom --dart-define arguments.
+  /// Explicit environment overrides still require a valid production URL.
+  @visibleForTesting
+  static String resolveBaseUrl({
+    bool releaseMode = kReleaseMode,
+    bool isWeb = kIsWeb,
+    TargetPlatform? platform,
+    String apiBaseUrlOverride = _apiBaseUrlOverride,
+    String apiHostOverride = _apiHostOverride,
+  }) {
+    if (apiBaseUrlOverride.isNotEmpty) {
+      final value = apiBaseUrlOverride.replaceFirst(RegExp(r'/$'), '');
       final uri = Uri.tryParse(value);
       if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
         throw StateError('API_BASE_URL must be an absolute URL.');
       }
       final isLoopback = uri.host == '127.0.0.1' || uri.host == 'localhost';
-      if (kReleaseMode && uri.scheme != 'https' && !isLoopback) {
+      if (releaseMode && uri.scheme != 'https' && !isLoopback) {
         throw StateError('Production API_BASE_URL must use HTTPS.');
       }
       return value;
     }
-    if (_apiHostOverride.isNotEmpty) {
-      if (kReleaseMode) {
+    if (apiHostOverride.isNotEmpty) {
+      if (releaseMode) {
         throw StateError(
           'API_HOST is development-only; use an HTTPS API_BASE_URL in production.',
         );
       }
-      return 'http://$_apiHostOverride:8001/api';
+      return 'http://$apiHostOverride:8001/api';
     }
-    if (kIsWeb) {
+    if (releaseMode) {
+      return 'https://ter7al.noxusai.online/api';
+    }
+    if (isWeb) {
       return 'http://127.0.0.1:8001/api';
     }
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      if (kReleaseMode) {
-        throw StateError(
-          'API_BASE_URL is required for Android production builds.',
-        );
-      }
+    if ((platform ?? defaultTargetPlatform) == TargetPlatform.android) {
       return 'http://10.0.2.2:8001/api';
-    }
-    if (kReleaseMode) {
-      throw StateError('API_BASE_URL is required for production builds.');
     }
     return 'http://127.0.0.1:8001/api';
   }

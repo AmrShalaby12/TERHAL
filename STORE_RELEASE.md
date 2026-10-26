@@ -6,7 +6,8 @@
 
 - Flutter: `3.44.0`
 - Dart: `3.12.x`
-- إصدار التطبيق: `1.3.2+8`
+- إصدار السورس: `1.3.3+9`
+- ملف Android AAB الجاهز: `1.3.2+8` (قبل إصلاح بدء التشغيل في 1.3.3)
 - Android application ID: `com.noxusAI.mobile` (بنفس حالة الأحرف)
 - iOS bundle ID: `online.noxusai.terhal`
 - Production API: `https://ter7al.noxusai.online/api`
@@ -21,8 +22,8 @@ flutter pub get
 flutter analyze
 flutter test
 flutter build appbundle --release \
-  --build-name=1.3.2 \
-  --build-number=8 \
+  --build-name=1.3.3 \
+  --build-number=9 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -32,7 +33,7 @@ flutter build appbundle --release \
 
 `mobile/build/app/outputs/bundle/release/app-release.aab`
 
-نسخة AAB الموقّعة للإصدار الحالي موجودة في:
+آخر نسخة AAB موقّعة تم بناؤها (1.3.2+8) موجودة في:
 
 `dist/Terhal-1.3.2+8.aab`
 
@@ -57,14 +58,16 @@ flutter build appbundle --release \
 cd mobile
 flutter pub get
 flutter build ipa --release \
-  --build-name=1.3.2 \
-  --build-number=8 \
+  --build-name=1.3.3 \
+  --build-number=9 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
 ```
 
 لا يمكن إنشاء أو توقيع ملف IPA على Linux؛ يجب تنفيذ خطوة iOS النهائية على macOS باستخدام Xcode وحساب Apple Developer المالك للتطبيق.
+
+من إصدار السورس 1.3.3، إعداد `API_BASE_URL` اختياري في Release: الافتراضي هو `https://ter7al.noxusai.online/api`. في الإصدارات السابقة، إغفاله في Archive كان يؤدي إلى StateError أثناء بناء أول شاشة. يجب إعادة بناء النسخة لإدخال الإصلاح.
 
 ## ملاحظات مهمة
 
