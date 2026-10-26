@@ -6,7 +6,7 @@
 
 - Flutter: `3.44.0`
 - Dart: `3.12.x`
-- إصدار السورس: `1.3.3+9`
+- إصدار السورس: `1.3.4+10` (Version 1.3.4، Build 10)
 - ملف Android AAB الجاهز: `1.3.2+8` (قبل إصلاح بدء التشغيل في 1.3.3)
 - Android application ID: `com.noxusAI.mobile` (بنفس حالة الأحرف)
 - iOS bundle ID: `online.noxusai.terhal`
@@ -22,8 +22,8 @@ flutter pub get
 flutter analyze
 flutter test
 flutter build appbundle --release \
-  --build-name=1.3.3 \
-  --build-number=9 \
+  --build-name=1.3.4 \
+  --build-number=10 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -58,14 +58,16 @@ flutter build appbundle --release \
 cd mobile
 flutter pub get
 flutter build ipa --release \
-  --build-name=1.3.3 \
-  --build-number=9 \
+  --build-name=1.3.4 \
+  --build-number=10 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
 ```
 
 لا يمكن إنشاء أو توقيع ملف IPA على Linux؛ يجب تنفيذ خطوة iOS النهائية على macOS باستخدام Xcode وحساب Apple Developer المالك للتطبيق.
+
+الإصدار 1.3.4 أعلى من الإصدار المنشور 1.2.4 الذي حدده المالك. رقم Build الحالي هو 10 بدل 9. بعد سحب التعديل، أنشئ Archive جديدًا بالأمر أعلاه وتأكد من ظهور Version 1.3.4 وBuild 10 في Organizer؛ إعادة رفع Archive قديم لا تُحدّث أرقامه. يجب أن تكون نسخة الإصدار المختارة في App Store Connect مطابقة، وألا يكون Build 10 مستخدمًا مسبقًا لذلك الإصدار.
 
 من إصدار السورس 1.3.3، إعداد `API_BASE_URL` اختياري في Release: الافتراضي هو `https://ter7al.noxusai.online/api`. في الإصدارات السابقة، إغفاله في Archive كان يؤدي إلى StateError أثناء بناء أول شاشة. يجب إعادة بناء النسخة لإدخال الإصلاح.
 
