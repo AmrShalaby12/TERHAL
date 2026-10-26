@@ -1,19 +1,19 @@
 # تسليم تحديث ترحال للمتاجر
 
-هذه النسخة تحتوي على الملفات التي يحتاجها المبرمج لبناء ونشر التطبيق على Google Play وApp Store. ملفات البناء والكاش والنسخ الاحتياطية وبيانات التشغيل ليست جزءًا من المستودع.
+هذا المستودع يحتوي على سورس التطبيق وملفات البناء. نشر تحديث للمتاجر يتطلب أيضًا صلاحيات الحسابات ومطابقة التوقيع وهوية التطبيق المنشور؛ متطلبات iOS غير المكتملة موضحة أدناه.
 
 ## الإصدار الحالي
 
 - Flutter: `3.44.0`
 - Dart: `3.12.x`
-- إصدار التطبيق: `1.3.1+7`
-- Android application ID: `com.allentravels.driver`
+- إصدار التطبيق: `1.3.2+8`
+- Android application ID: `com.noxusAI.mobile` (بنفس حالة الأحرف)
 - iOS bundle ID: `online.noxusai.terhal`
 - Production API: `https://ter7al.noxusai.online/api`
 
 ## Android
 
-ملفات Firebase ومفتاح Android الحالي وملف `key.properties` موجودة في المشروع حتى يمكن إصدار تحديث بنفس هوية التطبيق. تعامل معها كأسرار ولا تغيّر المفتاح عند تحديث التطبيق الموجود على المتجر.
+تم تنزيل إعدادات Firebase الأصلية للحزمة `com.noxusAI.mobile` من مشروع `ter7al-e4c20`، وهو نفس مشروع خادم الإشعارات. مفتاح Android الموجود وملف `key.properties` لم يتغيرا. لم تتم مقارنة المفتاح بمفتاح الرفع المسجل في Google Play؛ يجب التحقق من التطابق قبل النشر.
 
 ```bash
 cd mobile
@@ -21,8 +21,8 @@ flutter pub get
 flutter analyze
 flutter test
 flutter build appbundle --release \
-  --build-name=1.3.1 \
-  --build-number=7 \
+  --build-name=1.3.2 \
+  --build-number=8 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -34,17 +34,19 @@ flutter build appbundle --release \
 
 نسخة AAB الموقّعة للإصدار الحالي موجودة في:
 
-`dist/Terhal-1.3.1+7.aab`
+`dist/Terhal-1.3.2+8.aab`
 
-قبل رفعها، تأكد من مطابقة شهادة مفتاح الرفع للمسجل في Play Console وأن آخر version code مرفوع أقل من 7. لم تتم مراجعة حساب Google Play من هذه البيئة.
+قبل رفعها، تأكد من مطابقة شهادة مفتاح الرفع للمسجل في Play Console وأن آخر version code مرفوع أقل من 8. لم تتم مراجعة حساب Google Play من هذه البيئة.
 
-نسخة APK الجاهزة للاختبار موجودة في:
+بصمة SHA-256 لشهادة توقيع الملف الحالي:
 
-`dist/Terhal-1.3.1+7.apk`
+`D0:ED:11:FA:1C:4B:19:8F:92:00:A7:B1:2E:53:D3:15:35:6D:9C:2C:22:DA:06:F5:59:72:6B:9F:10:B4:C7:DC`
+
+ملفات APK وAAB الأقدم في `dist/` تحمل `com.allentravels.driver`؛ لا تستخدمها لتحديث تطبيق `com.noxusAI.mobile`.
 
 ## iOS
 
-تم تجهيز مشروع iOS بالـbundle ID الرسمي `online.noxusai.terhal`، وتصاريح الكاميرا والموقع والإشعارات. قبل عمل Archive على جهاز macOS يجب على المبرمج:
+مشروع iOS مضبوط حاليًا على bundle ID `online.noxusai.terhal`؛ يجب مطابقته مع التطبيق الموجود في App Store Connect. قبل عمل Archive على جهاز macOS يجب على المبرمج:
 
 1. إضافة `mobile/ios/Runner/GoogleService-Info.plist` الخاص بتطبيق iOS من Firebase؛ هذا الملف غير موجود في التسليم الحالي.
 2. فتح `mobile/ios/Runner.xcworkspace` في Xcode، واختيار Apple Team الصحيح، وتفعيل Push Notifications وBackground Modes.
@@ -55,8 +57,8 @@ flutter build appbundle --release \
 cd mobile
 flutter pub get
 flutter build ipa --release \
-  --build-name=1.3.1 \
-  --build-number=7 \
+  --build-name=1.3.2 \
+  --build-number=8 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/

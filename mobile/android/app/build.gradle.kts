@@ -18,7 +18,7 @@ if (hasReleaseSigning) {
 }
 
 android {
-    namespace = "com.allentravels.driver"
+    namespace = "com.noxusAI.mobile"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -35,7 +35,7 @@ android {
 
     defaultConfig {
         // Must match the package_name in google-services.json (Firebase).
-        applicationId = "com.allentravels.driver"
+        applicationId = "com.noxusAI.mobile"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         // FCM + foreground location require a modern minimum.

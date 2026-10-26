@@ -1,4 +1,4 @@
-package com.allentravels.driver
+package com.noxusAI.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 import android.os.Bundle
