@@ -7,7 +7,7 @@
 - Flutter: `3.44.0`
 - Dart: `3.12.x`
 - إصدار السورس: `1.3.4+10` (Version 1.3.4، Build 10)
-- ملف Android AAB الجاهز: `1.3.2+8` (قبل إصلاح بدء التشغيل في 1.3.3)
+- ملف Android AAB الجاهز: `1.3.4+10` (يشمل إصلاح بدء التشغيل)
 - Android application ID: `com.noxusAI.mobile` (بنفس حالة الأحرف)
 - iOS bundle ID: `online.noxusai.terhal`
 - Production API: `https://ter7al.noxusai.online/api`
@@ -33,17 +33,17 @@ flutter build appbundle --release \
 
 `mobile/build/app/outputs/bundle/release/app-release.aab`
 
-آخر نسخة AAB موقّعة تم بناؤها (1.3.2+8) موجودة في:
+آخر نسخة AAB موقّعة تم بناؤها (1.3.4+10) موجودة في:
 
-`dist/Terhal-1.3.2+8.aab`
+`dist/Terhal-1.3.4+10.aab`
 
-قبل رفعها، تأكد من مطابقة شهادة مفتاح الرفع للمسجل في Play Console وأن آخر version code مرفوع أقل من 8. لم تتم مراجعة حساب Google Play من هذه البيئة.
+قبل رفعها، تأكد من مطابقة شهادة مفتاح الرفع للمسجل في Play Console وأن آخر version code مرفوع أقل من 10. لم تتم مراجعة حساب Google Play من هذه البيئة.
 
 بصمة SHA-256 لشهادة توقيع الملف الحالي:
 
 `D0:ED:11:FA:1C:4B:19:8F:92:00:A7:B1:2E:53:D3:15:35:6D:9C:2C:22:DA:06:F5:59:72:6B:9F:10:B4:C7:DC`
 
-ملفات APK وAAB الأقدم في `dist/` تحمل `com.allentravels.driver`؛ لا تستخدمها لتحديث تطبيق `com.noxusAI.mobile`.
+ملفات APK وAAB بالإصدارات 1.3.0 و1.3.1 في `dist/` تحمل `com.allentravels.driver`؛ لا تستخدمها لتحديث تطبيق `com.noxusAI.mobile`.
 
 ## iOS
 
