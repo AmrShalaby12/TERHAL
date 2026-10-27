@@ -6,8 +6,8 @@
 
 - Flutter: `3.44.0`
 - Dart: `3.12.x`
-- إصدار السورس: `1.3.4+10` (Version 1.3.4، Build 10)
-- ملف Android AAB الجاهز: `1.3.4+10` (يشمل إصلاح بدء التشغيل)
+- إصدار السورس: `1.3.4+19` (Version 1.3.4، Build 19)
+- ملف Android AAB الجاهز: `1.3.4+19` (يشمل إصلاح بدء التشغيل)
 - Android application ID: `com.noxusAI.mobile` (بنفس حالة الأحرف)
 - iOS bundle ID: `online.noxusai.terhal`
 - Production API: `https://ter7al.noxusai.online/api`
@@ -23,7 +23,7 @@ flutter analyze
 flutter test
 flutter build appbundle --release \
   --build-name=1.3.4 \
-  --build-number=10 \
+  --build-number=19 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -33,11 +33,11 @@ flutter build appbundle --release \
 
 `mobile/build/app/outputs/bundle/release/app-release.aab`
 
-آخر نسخة AAB موقّعة تم بناؤها (1.3.4+10) موجودة في:
+آخر نسخة AAB موقّعة تم بناؤها (1.3.4+19) موجودة في:
 
-`dist/Terhal-1.3.4+10.aab`
+`dist/Terhal-1.3.4+19.aab`
 
-قبل رفعها، تأكد من مطابقة شهادة مفتاح الرفع للمسجل في Play Console وأن آخر version code مرفوع أقل من 10. لم تتم مراجعة حساب Google Play من هذه البيئة.
+إصدار الإنتاج الظاهر في Google Play هو `1.2.5+18`؛ رقم البناء 10 في الحزمة السابقة لم يسمح للمستخدمين الحاليين بالترقية. ارفع الحزمة الجديدة ذات `versionCode=19`، وتأكد من مطابقة شهادة مفتاح الرفع للمسجل في Play Console ومن عدم استخدام رقم 19 في أي مسار إصدار آخر. لم تتم مراجعة حساب Google Play من هذه البيئة.
 
 بصمة SHA-256 لشهادة توقيع الملف الحالي:
 
@@ -59,7 +59,7 @@ cd mobile
 flutter pub get
 flutter build ipa --release \
   --build-name=1.3.4 \
-  --build-number=10 \
+  --build-number=19 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -67,7 +67,7 @@ flutter build ipa --release \
 
 لا يمكن إنشاء أو توقيع ملف IPA على Linux؛ يجب تنفيذ خطوة iOS النهائية على macOS باستخدام Xcode وحساب Apple Developer المالك للتطبيق.
 
-الإصدار 1.3.4 أعلى من الإصدار المنشور 1.2.4 الذي حدده المالك. رقم Build الحالي هو 10 بدل 9. بعد سحب التعديل، أنشئ Archive جديدًا بالأمر أعلاه وتأكد من ظهور Version 1.3.4 وBuild 10 في Organizer؛ إعادة رفع Archive قديم لا تُحدّث أرقامه. يجب أن تكون نسخة الإصدار المختارة في App Store Connect مطابقة، وألا يكون Build 10 مستخدمًا مسبقًا لذلك الإصدار.
+بعد سحب التعديل، أنشئ Archive جديدًا بالأمر أعلاه وتأكد من ظهور Version 1.3.4 وBuild 19 في Organizer؛ إعادة رفع Archive قديم لا تُحدّث أرقامه. يجب أن تكون نسخة الإصدار المختارة في App Store Connect مطابقة، وألا يكون Build 19 مستخدمًا مسبقًا لذلك الإصدار.
 
 من إصدار السورس 1.3.3، إعداد `API_BASE_URL` اختياري في Release: الافتراضي هو `https://ter7al.noxusai.online/api`. في الإصدارات السابقة، إغفاله في Archive كان يؤدي إلى StateError أثناء بناء أول شاشة. يجب إعادة بناء النسخة لإدخال الإصلاح.
 
