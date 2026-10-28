@@ -6,7 +6,7 @@
 
 - Flutter: `3.44.0`
 - Dart: `3.12.x`
-- إصدار السورس: `1.3.4+19` (Version 1.3.4، Build 19)
+- إصدار السورس: `1.3.5+20` (Version 1.3.5، Build 20)
 - ملف Android AAB الجاهز: `1.3.4+19` (يشمل إصلاح بدء التشغيل)
 - Android application ID: `com.noxusAI.mobile` (بنفس حالة الأحرف)
 - iOS bundle ID: `online.noxusai.terhal`
@@ -22,8 +22,8 @@ flutter pub get
 flutter analyze
 flutter test
 flutter build appbundle --release \
-  --build-name=1.3.4 \
-  --build-number=19 \
+  --build-name=1.3.5 \
+  --build-number=20 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -58,8 +58,8 @@ flutter build appbundle --release \
 cd mobile
 flutter pub get
 flutter build ipa --release \
-  --build-name=1.3.4 \
-  --build-number=19 \
+  --build-name=1.3.5 \
+  --build-number=20 \
   --dart-define=APP_MODE=terhal \
   --dart-define=API_BASE_URL=https://ter7al.noxusai.online/api \
   --dart-define=DASHBOARD_URL=https://ter7al.noxusai.online/dashboard/overview/
@@ -67,9 +67,11 @@ flutter build ipa --release \
 
 لا يمكن إنشاء أو توقيع ملف IPA على Linux؛ يجب تنفيذ خطوة iOS النهائية على macOS باستخدام Xcode وحساب Apple Developer المالك للتطبيق.
 
-بعد سحب التعديل، أنشئ Archive جديدًا بالأمر أعلاه وتأكد من ظهور Version 1.3.4 وBuild 19 في Organizer؛ إعادة رفع Archive قديم لا تُحدّث أرقامه. يجب أن تكون نسخة الإصدار المختارة في App Store Connect مطابقة، وألا يكون Build 19 مستخدمًا مسبقًا لذلك الإصدار.
+بعد سحب التعديل، أنشئ Archive جديدًا بالأمر أعلاه وتأكد من ظهور Version 1.3.5 وBuild 20 في Organizer؛ إعادة رفع Archive قديم لا تُحدّث أرقامه. يجب أن تكون نسخة الإصدار المختارة في App Store Connect مطابقة، وألا يكون Build 20 مستخدمًا مسبقًا لذلك الإصدار. خطوات البناء النظيف في `IOS_PRODUCTION_BUILD.md`.
 
 من إصدار السورس 1.3.3، إعداد `API_BASE_URL` اختياري في Release: الافتراضي هو `https://ter7al.noxusai.online/api`. في الإصدارات السابقة، إغفاله في Archive كان يؤدي إلى StateError أثناء بناء أول شاشة. يجب إعادة بناء النسخة لإدخال الإصلاح.
+
+من إصدار 1.3.5، نفس العنوان هو الافتراضي أيضًا في Debug وProfile والتشغيل من Xcode؛ استخدام سيرفر محلي يتطلب override صريحًا في التطوير. لا يُقبل localhost أو عنوان محاكي Android في Release حتى عند توفير override.
 
 ## ملاحظات مهمة
 

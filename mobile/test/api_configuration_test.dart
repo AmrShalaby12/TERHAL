@@ -1,33 +1,24 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:terhal_mobile/src/api_service.dart';
 
 void main() {
-  test('iOS release archive without dart defines resolves production API', () {
-    expect(
-      ApiService.resolveBaseUrl(
-        releaseMode: true,
-        isWeb: false,
-        platform: TargetPlatform.iOS,
-        apiBaseUrlOverride: '',
-        apiHostOverride: '',
-      ),
-      'https://ter7al.noxusai.online/api',
-    );
+  test('default service starts without any build defines', () {
+    expect(ApiService.new, returnsNormally);
+    expect(ApiService.apiBaseUrl, 'https://ter7al.noxusai.online/api');
   });
 
-  test('Android release also works without custom build arguments', () {
-    expect(
-      ApiService.resolveBaseUrl(
-        releaseMode: true,
-        isWeb: false,
-        platform: TargetPlatform.android,
-        apiBaseUrlOverride: '',
-        apiHostOverride: '',
-      ),
-      'https://ter7al.noxusai.online/api',
-    );
-  });
+  for (final release in [true, false]) {
+    test('missing build defines use production API (release=$release)', () {
+      expect(
+        ApiService.resolveBaseUrl(
+          releaseMode: release,
+          apiBaseUrlOverride: '',
+          apiHostOverride: '',
+        ),
+        'https://ter7al.noxusai.online/api',
+      );
+    });
+  }
 
   test('explicit HTTPS API override is preserved and normalized', () {
     expect(
@@ -38,6 +29,21 @@ void main() {
       ),
       'https://staging.example.com/api',
     );
+  });
+
+  test('release cannot target localhost or the Android emulator', () {
+    for (final host in ['localhost', '127.0.0.1', '[::1]', '10.0.2.2']) {
+      for (final scheme in ['http', 'https']) {
+        expect(
+          () => ApiService.resolveBaseUrl(
+            releaseMode: true,
+            apiBaseUrlOverride: '$scheme://$host:8001/api',
+            apiHostOverride: '',
+          ),
+          throwsStateError,
+        );
+      }
+    }
   });
 
   test('invalid and insecure production overrides remain rejected', () {
@@ -61,20 +67,22 @@ void main() {
     );
   });
 
-  test('development emulator and iOS endpoints stay local', () {
-    for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
-      expect(
-        ApiService.resolveBaseUrl(
-          releaseMode: false,
-          isWeb: false,
-          platform: platform,
-          apiBaseUrlOverride: '',
-          apiHostOverride: '',
-        ),
-        platform == TargetPlatform.android
-            ? 'http://10.0.2.2:8001/api'
-            : 'http://127.0.0.1:8001/api',
-      );
-    }
+  test('local development requires an explicit override', () {
+    expect(
+      ApiService.resolveBaseUrl(
+        releaseMode: false,
+        apiBaseUrlOverride: '',
+        apiHostOverride: '127.0.0.1',
+      ),
+      'http://127.0.0.1:8001/api',
+    );
+    expect(
+      ApiService.resolveBaseUrl(
+        releaseMode: false,
+        apiBaseUrlOverride: 'http://127.0.0.1:8001/api',
+        apiHostOverride: '',
+      ),
+      'http://127.0.0.1:8001/api',
+    );
   });
 }

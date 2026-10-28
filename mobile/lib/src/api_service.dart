@@ -22,7 +22,8 @@ class ApiService {
   /// Optional build-time override for running on a physical device on the
   /// same LAN as the backend, e.g.:
   ///   flutter run --dart-define=API_HOST=192.168.0.106
-  /// Development builds use local endpoints; store builds default to Terhal.
+  /// All builds use Terhal unless a developer explicitly supplies an override.
+  static const productionApiBaseUrl = 'https://ter7al.noxusai.online/api';
   static const String _apiHostOverride = String.fromEnvironment('API_HOST');
   static const String _apiBaseUrlOverride = String.fromEnvironment(
     'API_BASE_URL',
@@ -35,8 +36,6 @@ class ApiService {
   @visibleForTesting
   static String resolveBaseUrl({
     bool releaseMode = kReleaseMode,
-    bool isWeb = kIsWeb,
-    TargetPlatform? platform,
     String apiBaseUrlOverride = _apiBaseUrlOverride,
     String apiHostOverride = _apiHostOverride,
   }) {
@@ -46,9 +45,16 @@ class ApiService {
       if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
         throw StateError('API_BASE_URL must be an absolute URL.');
       }
-      final isLoopback = uri.host == '127.0.0.1' || uri.host == 'localhost';
-      if (releaseMode && uri.scheme != 'https' && !isLoopback) {
-        throw StateError('Production API_BASE_URL must use HTTPS.');
+      final isLocal =
+          uri.host == '127.0.0.1' ||
+          uri.host == 'localhost' ||
+          uri.host == '::1' ||
+          uri.host == '[::1]' ||
+          uri.host == '10.0.2.2';
+      if (releaseMode && (uri.scheme != 'https' || isLocal)) {
+        throw StateError(
+          'Production API_BASE_URL must use a remote HTTPS URL.',
+        );
       }
       return value;
     }
@@ -60,16 +66,7 @@ class ApiService {
       }
       return 'http://$apiHostOverride:8001/api';
     }
-    if (releaseMode) {
-      return 'https://ter7al.noxusai.online/api';
-    }
-    if (isWeb) {
-      return 'http://127.0.0.1:8001/api';
-    }
-    if ((platform ?? defaultTargetPlatform) == TargetPlatform.android) {
-      return 'http://10.0.2.2:8001/api';
-    }
-    return 'http://127.0.0.1:8001/api';
+    return productionApiBaseUrl;
   }
 
   /// Exposed so the background location isolate can POST GPS with the same
